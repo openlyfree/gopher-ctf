@@ -1,3 +1,4 @@
 ﻿gopher-ctf.db
-tmp/
+tmp/*
 *_templ.go
+*.exe

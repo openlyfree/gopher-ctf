@@ -1,0 +1,6 @@
+﻿[build]
+  cmd = "templ generate && go build -o ./tmp/main main.go"
+  bin = "tmp/main"
+  delay = 1000 # ms
+  include_ext = ["go", "tpl", "tmpl", "html", "templ"]
+  exclude_dir = ["assets", "tmp", "vendor"]

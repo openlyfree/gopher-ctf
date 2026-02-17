@@ -1,0 +1,28 @@
+package components
+
+import "context"
+
+func GetUser(ctx context.Context) string {
+	if val := ctx.Value("username"); val != nil {
+		return val.(string)
+	}
+	return ""
+}
+
+templ Nav() {
+	<nav>
+		<div class="links">
+			<a href="/">Home</a>
+			<button hx-get="/challenges" hx-target="main">Challenges</button>
+		</div>
+		<div class="usr">
+			if username := GetUser(ctx); username != "" {
+				<span>{ username }</span>
+				<button hx-post="/logout" hx-target="body">Logout</button>
+			} else {
+				<button hx-get="/login" hx-target="main">Log in</button>
+				<button hx-get="/register" hx-target="main">Register</button>
+			}
+		</div>
+	</nav>
+}

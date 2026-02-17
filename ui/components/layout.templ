@@ -1,0 +1,19 @@
+package components
+
+templ Layout(title string) {
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>{ title } | Gopher CTF</title>
+        <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+        <link rel="stylesheet" href="/static/css/style.css"/>
+    </head>
+    <body hx-boost="true">
+        @Nav()
+        <div>
+            { children... }
+        </div>
+    </body>
+    </html>
+}

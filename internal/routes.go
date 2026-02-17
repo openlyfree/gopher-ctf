@@ -17,12 +17,14 @@ var db *gorm.DB
 
 func RegisterRoutes(database *gorm.DB, router *gin.Engine) {
 	db = database
-	router.Use(UserLoader())
 	router.Static("/static", "./ui/static")
-	router.GET("/", HandleIndex)
+	router.Use(UserLoader())
+
+	router.GET("/", func(c *gin.Context) { Render(c, 200, pages.Index()) })
 	router.GET("/login", func(c *gin.Context) { Render(c, 200, pages.Login()) })
-	router.POST("/login", LoginHandler)
 	router.GET("/register", func(c *gin.Context) { Render(c, 200, pages.Signup()) })
+
+	router.POST("/login", LoginHandler)
 	router.POST("/register", RegisterHandler)
 	router.POST("/logout", LogoutHandler)
 }
@@ -60,7 +62,7 @@ func LoginHandler(c *gin.Context) {
 	session.Set("user_id", user.ID)
 	session.Set("username", user.Username)
 	_ = session.Save()
-	c.Header("HX-Redirect", "/dashboard")
+	c.Header("HX-Redirect", "/")
 	c.Status(http.StatusOK)
 }
 

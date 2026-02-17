@@ -12,22 +12,16 @@ func GetUser(ctx context.Context) string {
 	return ""
 }
 
-func getWelcome() string {
-	usr := GetUser(context.Background())
-	if usr == "" {
-		return "Welcome to Gopher CTF!"
-	}
-	return "Welcome to Gopher CTF, " + usr + "!"
-}
-
 templ Index() {
 	@components.Layout("Home") {
 		<main class="hero">
-			<h1>{ getWelcome() }</h1>
-			<p>The fast, Go-powered CTF platform.</p>
 			if GetUser(ctx) == "" {
-                <button hx-get="/register" hx-target="main">Join the CTF</button>
-            }
+				<h1>"Welcome to Gopher CTF!"</h1>
+				<p>The fast, Go-powered CTF platform.</p>
+				<button hx-get="/register" hx-target="main">Join the CTF</button>
+			} else {
+			    <h1>"Welcome back, { GetUser(ctx) }!"</h1>
+			}
 		</main>
 	}
 }

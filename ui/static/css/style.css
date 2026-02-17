@@ -1,4 +1,4 @@
-﻿nav {
+nav {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -65,7 +65,7 @@ nav button {
 
 :root {
     font-family: Segoe UI, serif;
-    --primary: black;
+    --primary: #232323;
     --secondary: white;
     color: var(--primary);
     background: var(--secondary);
@@ -75,6 +75,6 @@ nav button {
 @media (prefers-color-scheme: dark) {
     :root {
         --primary: white;
-        --secondary: black;
+        --secondary: #232323;
     }
 }

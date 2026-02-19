@@ -24,18 +24,18 @@ func RegisterRoutes(database *gorm.DB, router *gin.Engine) {
 	router.GET("/", func(c *gin.Context) { Render(c, 200, pages.Index()) })
 	router.GET("/login", func(c *gin.Context) { Render(c, 200, pages.Login()) })
 	router.GET("/register", func(c *gin.Context) { Render(c, 200, pages.Signup()) })
+	router.GET("/gimme-secret-candy-vault", func(c *gin.Context) { Render(c, 200, pages.AdminLogin()) })
+	router.GET("/challenges", func(c *gin.Context) { Render(c, 200, pages.Challenges(db)) })
 
 	router.POST("/login", LoginHandler)
 	router.POST("/register", RegisterHandler)
 	router.POST("/logout", LogoutHandler)
-
+	router.POST("/gimme-secret-candy-vault", AdminLoginHandler)
 	admin := router.Group("/secret-candy-vault")
 	admin.Use(AdminAuth())
 
 	admin.GET("/", func(c *gin.Context) { Render(c, 200, pages.Admin()) })
-	router.GET("/gimme-secret-candy-vault", func(c *gin.Context) { Render(c, 200, pages.AdminLogin()) })
 
-	router.POST("/gimme-secret-candy-vault", AdminLoginHandler)
 	admin.POST("/challenge", CreateChallengeHandler)
 
 }

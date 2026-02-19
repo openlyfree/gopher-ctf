@@ -1,5 +1,5 @@
 ﻿gopher-ctf.db
-tmp/*
+tmp/
 *_templ.go
 *.exe
-/.idea/inspectionProfiles/Project_Default.xml
+ui/*.go

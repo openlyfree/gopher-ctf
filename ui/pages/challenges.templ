@@ -1,0 +1,21 @@
+package pages
+
+import (
+	"gopher-ctf/internal/models"
+	"gorm.io/gorm"
+)
+
+func GetChallenges(db *gorm.DB) []models.Challenge {
+	var challenges []models.Challenge
+	db.Find(&challenges)
+	return challenges
+}
+
+templ Challenges(db *gorm.DB) {
+	for _, c := range GetChallenges(db) {
+		<div class="challenge-card">
+			<h2>{ c.Title }</h2>
+			<p>{ c.Description }</p>
+		</div>
+	}
+}

@@ -15,7 +15,13 @@ import (
 func main() {
 	db, _ := gorm.Open(sqlite.Open("gopher-ctf.db"), &gorm.Config{})
 	if err := db.AutoMigrate(&models.User{}); err != nil {
-		return
+		log.Fatal(err)
+	}
+	if err := db.AutoMigrate(&models.Challenge{}); err != nil {
+		log.Fatal(err)
+	}
+	if err := db.AutoMigrate(&models.ChallengeCompletion{}); err != nil {
+		log.Fatal(err)
 	}
 
 	router := gin.Default()

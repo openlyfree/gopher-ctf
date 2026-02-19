@@ -54,9 +54,6 @@ func LogoutHandler(c *gin.Context) {
 	c.Header("HX-Redirect", "/")
 	c.Status(http.StatusOK)
 }
-func HandleIndex(c *gin.Context) {
-	Render(c, 200, pages.Index())
-}
 
 func LoginHandler(c *gin.Context) {
 	var user models.User

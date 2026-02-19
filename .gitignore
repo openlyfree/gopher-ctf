@@ -2,3 +2,4 @@
 tmp/*
 *_templ.go
 *.exe
+/.idea/inspectionProfiles/Project_Default.xml

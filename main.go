@@ -3,6 +3,7 @@ package main
 import (
 	"gopher-ctf/internal"
 	"gopher-ctf/internal/models"
+	"gopher-ctf/internal/shared"
 	"log"
 
 	"github.com/gin-contrib/sessions"
@@ -23,9 +24,10 @@ func main() {
 	if err := db.AutoMigrate(&models.ChallengeCompletion{}); err != nil {
 		log.Fatal(err)
 	}
+	shared.DB = db
 
 	router := gin.Default()
 	router.Use(sessions.Sessions("gopher_session", cookie.NewStore([]byte("really funky secret key that probably shouldn't be hardcoded"))))
-	internal.RegisterRoutes(db, router)
+	internal.RegisterRoutes(router)
 	log.Fatal(router.Run("127.0.0.1:8080"))
 }

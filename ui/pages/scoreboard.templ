@@ -1,0 +1,37 @@
+package pages
+
+import (
+	"gopher-ctf/internal/models"
+	"gopher-ctf/ui/components"
+	"strconv"
+)
+
+templ Scoreboard(users []models.User) {
+	<div class="scoreboard-container" hx-get="/scoreboard" hx-trigger="every 10s" hx-swap="outerHTML">
+		<h1>Scoreboard</h1>
+		<table>
+			<thead>
+				<tr>
+					<th>Rank</th>
+					<th>User</th>
+					<th>Score</th>
+				</tr>
+			</thead>
+			<tbody>
+				for i, u := range users {
+					<tr>
+						<td>{ strconv.Itoa(i+1) }</td>
+						<td>{ u.Username }</td>
+						<td>{ strconv.Itoa(u.Score) }</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+templ ScoreboardPage(users []models.User) {
+	@components.Layout("Scoreboard") {
+		@Scoreboard(users)
+	}
+}

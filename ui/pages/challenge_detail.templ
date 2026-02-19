@@ -1,0 +1,12 @@
+package pages
+
+import (
+	"gopher-ctf/internal/models"
+	"gopher-ctf/ui/components"
+)
+
+templ ChallengeDetail(c models.Challenge) {
+	@components.Layout("Challenge: " + c.Title) {
+		@components.ChallengeCard(c)
+	}
+}

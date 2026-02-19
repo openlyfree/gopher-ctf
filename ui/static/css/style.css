@@ -1,80 +1,84 @@
+
+
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-image: url("/static/images/background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
 nav {
     display: flex;
-    justify-content: space-around;
+    flex-direction: row;
     align-items: center;
-    padding-top: 15px;
+    justify-content: space-between;
+    padding: 20px 20px;
+    font-size: 15px;
+}
+
+main:not(:has(div.scoreboard-container)):not(:has(div.challenges-container)) {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
 
 }
 
+main:has(div.challenges-container), main:has(div.scoreboard-container) {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding: 0 20px 20px;
+}
 
-nav div a, span {
-    text-decoration: none;
+nav a {
     color: var(--primary);
-    padding-right: 30px;
+    text-decoration: none;
+    background: none;
+    margin: 0 10px;
+    font-family: "Cascadia Code", Monospaced, monospace;
+    cursor: pointer;
+}
+
+button, input {
+    background: var(--secondary);
+    color: var(--primary);
+    font-family: "Cascadia Code", Monospaced, monospace;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 15px;
+    border: none;
+    border-radius: 12px;
+}
+
+input::placeholder {
+    color: var(--primary);
+    font-family: "Cascadia Code", Monospaced, monospace;
+}
+
+input:focus{
+    outline: none;
+    box-shadow: 0 0 5px var(--secondary);
 }
 
 .login, .signup {
-    display: grid;
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    width: 100%;
-    height: 100%;
-
-}
-
-input.login, input.signup {
-    padding-bottom: 10px;
-}
-
-
-input, button {
-    background: none;
-    border: var(--primary) solid 1px;
-    padding: 10px 20px;
-    text-align: center;
-    margin-top: 20px;
-    cursor: pointer;
-    border-radius: 12px;
-    color: var(--primary);
-    font-size: 15px;
-}
-
-input {
-    text-align: left;
-}
-
-input.login, input.signup button.login, button.signup {
-    padding: 30px 20px;
-}
-
-
-main {
-    justify-content: center;
-    text-align: center;
-    position: absolute;
-
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-nav button {
-    border: none;
-    padding: 10px 30px;
+    gap: 10px;
 }
 
 :root {
-    font-family: Segoe UI, serif;
-    --primary: #232323;
-    --secondary: white;
+    font-family: "Cascadia Code", Monospaced, monospace;
+    --primary: white;
+    --secondary: #232323;
     color: var(--primary);
     background: var(--secondary);
-    font-size: 15px;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --primary: white;
-        --secondary: #232323;
-    }
+    font-size: 12px;
 }

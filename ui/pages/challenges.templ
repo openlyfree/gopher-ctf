@@ -1,21 +1,28 @@
 package pages
 
 import (
+	"strconv"
 	"gopher-ctf/internal/models"
-	"gorm.io/gorm"
+	"gopher-ctf/ui/components"
 )
 
-func GetChallenges(db *gorm.DB) []models.Challenge {
-	var challenges []models.Challenge
-	db.Find(&challenges)
-	return challenges
+templ Challenges(challenges []models.Challenge) {
+	<div class="challenges-container">
+		<h1>Challenges</h1>
+		<div class="challenges-grid">
+			for _, c := range challenges {
+				<div class="challenge-card">
+					<h2>{ c.Title }</h2>
+					<p>{ c.Description }</p>
+					<button hx-get={ "/challenges/" + strconv.Itoa(int(c.ID)) } hx-target="main">View Challenge</button>
+				</div>
+			}
+		</div>
+	</div>
 }
 
-templ Challenges(db *gorm.DB) {
-	for _, c := range GetChallenges(db) {
-		<div class="challenge-card">
-			<h2>{ c.Title }</h2>
-			<p>{ c.Description }</p>
-		</div>
+templ ChallengesPage(challenges []models.Challenge) {
+	@components.Layout("Challenges") {
+		@Challenges(challenges)
 	}
 }

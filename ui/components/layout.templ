@@ -3,17 +3,18 @@ package components
 templ Layout(title string) {
     <!DOCTYPE html>
     <html lang="en">
+
     <head>
         <meta charset="UTF-8"/>
         <title>{ title } | Gopher CTF</title>
         <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-        <link rel="stylesheet" href="/static/css/style.css"/>
+        <link rel="stylesheet" href="/static/css/style.css?v=1.0.1"/>
     </head>
     <body hx-boost="true">
         @Nav()
-        <div>
+        <main>
             { children... }
-        </div>
+        </main>
     </body>
     </html>
 }

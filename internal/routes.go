@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"encoding/json"
 	"gopher-ctf/internal/models"
 	"net/http"
 
@@ -27,6 +28,16 @@ func RegisterRoutes(database *gorm.DB, router *gin.Engine) {
 	router.POST("/login", LoginHandler)
 	router.POST("/register", RegisterHandler)
 	router.POST("/logout", LogoutHandler)
+
+	admin := router.Group("/secret-candy-vault")
+	admin.Use(AdminAuth())
+
+	admin.GET("/", func(c *gin.Context) { Render(c, 200, pages.Admin()) })
+	router.GET("/gimme-secret-candy-vault", func(c *gin.Context) { Render(c, 200, pages.AdminLogin()) })
+
+	router.POST("/gimme-secret-candy-vault", AdminLoginHandler)
+	admin.POST("/challenge", CreateChallengeHandler)
+
 }
 func Render(c *gin.Context, status int, cmp templ.Component) {
 	c.Status(status)
@@ -76,4 +87,31 @@ func RegisterHandler(c *gin.Context) {
 
 	c.Header("HX-Redirect", "/login")
 	c.Status(http.StatusOK)
+}
+
+func CreateChallengeHandler(c *gin.Context) {
+	file, _ := c.FormFile("challenge_file")
+	openedFile, _ := file.Open()
+	defer openedFile.Close()
+
+	var newChallenges []models.Challenge
+	if err := json.NewDecoder(openedFile).Decode(&newChallenges); err != nil {
+		c.String(http.StatusBadRequest, "Invalid JSON format")
+		return
+	}
+
+	for _, challenge := range newChallenges {
+		db.Create(&challenge)
+	}
+
+	c.String(http.StatusOK, "Successfully uploaded %d challenges!", len(newChallenges))
+}
+func AdminLoginHandler(c *gin.Context) {
+	if c.PostForm("password") == "levraiglooby26" {
+		c.Status(http.StatusOK)
+		c.SetCookie("secret_candy_vault_access", "levraiglooby26", 3153600000, "/", "", false, true)
+		c.Header("HX-Redirect", "/secret-candy-vault")
+	} else {
+		c.String(http.StatusOK, "Incorrect password")
+	}
 }

@@ -15,3 +15,14 @@ func UserLoader() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func AdminAuth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		cookie, err := c.Cookie("secret_candy_vault_access")
+		if err != nil || cookie != "levraiglooby26" { //yes its hardcoded fuck you
+			c.AbortWithStatus(404)
+			return
+		}
+		c.Next()
+	}
+}

@@ -3,6 +3,7 @@ package handlers
 import (
 	"gopher-ctf/internal/models"
 	"gopher-ctf/internal/shared"
+	"gopher-ctf/ui/pages"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
@@ -44,7 +45,11 @@ func LoginHandler(c *gin.Context) {
 }
 
 func RegisterHandler(c *gin.Context) {
-	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(c.PostForm("password")), 14)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(c.PostForm("password")), 14)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Error creating account")
+		return
+	}
 
 	if err := shared.DB.Create(&models.User{Username: c.PostForm("username"), Password: string(hashedPassword)}).Error; err != nil {
 		c.String(200, "Username already taken")
@@ -53,4 +58,33 @@ func RegisterHandler(c *gin.Context) {
 
 	c.Header("HX-Redirect", "/login")
 	c.Status(http.StatusOK)
+}
+
+func ScoreboardHandler(c *gin.Context) {
+	var users []models.User
+	if err := shared.DB.Order("score desc").Find(&users).Error; err != nil {
+		c.String(http.StatusInternalServerError, "Database error")
+		return
+	}
+	if c.GetHeader("HX-Request") == "true" {
+		Render(c, 200, pages.Scoreboard(users))
+	} else {
+		Render(c, 200, pages.ScoreboardPage(users))
+	}
+}
+
+func RegisterPageHandler(c *gin.Context) {
+	if c.GetHeader("HX-Request") == "true" {
+		Render(c, 200, pages.Signup())
+	} else {
+		Render(c, 200, pages.SignupPage())
+	}
+}
+
+func LoginPageHandler(c *gin.Context) {
+	if c.GetHeader("HX-Request") == "true" {
+		Render(c, 200, pages.Login())
+	} else {
+		Render(c, 200, pages.LoginPage())
+	}
 }

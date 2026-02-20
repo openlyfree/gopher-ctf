@@ -1,11 +1,15 @@
 package handlers
 
 import (
+	"encoding/json"
 	"gopher-ctf/internal/models"
 	"gopher-ctf/internal/shared"
+	"gopher-ctf/ui/components"
+	"gopher-ctf/ui/pages"
 	"net/http"
 	"strconv"
 
+	"github.com/a-h/templ"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -74,4 +78,76 @@ func SubmitFlagHandler(c *gin.Context) {
 	}
 
 	c.String(http.StatusOK, "Correct! +%d points", challenge.Points)
+}
+
+func GetChallenge(id string) (models.Challenge, error) {
+	tempId, err := strconv.Atoi(id)
+	if err != nil {
+		return models.Challenge{}, err
+	}
+	var challenge models.Challenge
+	if err := shared.DB.First(&challenge, tempId).Error; err != nil {
+		return models.Challenge{}, err
+	}
+	return challenge, nil
+}
+
+func ChallengeIndividualHandler(c *gin.Context) {
+	challenge, err := GetChallenge(c.Param("id"))
+	if err != nil {
+		c.Status(http.StatusNotFound)
+		return
+	}
+	if c.GetHeader("HX-Request") == "true" {
+		Render(c, 200, components.ChallengeCard(challenge))
+	} else {
+		Render(c, 200, pages.ChallengeDetail(challenge))
+	}
+}
+
+func Render(c *gin.Context, status int, cmp templ.Component) {
+	c.Status(status)
+	_ = cmp.Render(c.Request.Context(), c.Writer)
+}
+
+func ChallengeIndexHandler(c *gin.Context) {
+	var challenges []models.Challenge
+	if err := shared.DB.Find(&challenges).Error; err != nil {
+		c.String(http.StatusInternalServerError, "Database error")
+		return
+	}
+	if c.GetHeader("HX-Request") == "true" {
+		Render(c, 200, pages.Challenges(challenges))
+	} else {
+		Render(c, 200, pages.ChallengesPage(challenges))
+	}
+}
+
+func CreateChallengeHandler(c *gin.Context) {
+	file, err := c.FormFile("challenge_file")
+	if err != nil {
+		c.String(http.StatusBadRequest, "File upload error")
+		return
+	}
+	openedFile, err := file.Open()
+	if err != nil {
+		c.String(http.StatusInternalServerError, "File open error")
+		return
+	}
+	defer openedFile.Close()
+
+	var newChallenges []models.Challenge
+	if err := json.NewDecoder(openedFile).Decode(&newChallenges); err != nil {
+		c.String(http.StatusBadRequest, "Invalid JSON format")
+		return
+	}
+
+	for _, challenge := range newChallenges {
+		if err := shared.DB.Create(&challenge).Error; err != nil {
+			c.String(http.StatusInternalServerError, "Database error")
+			return
+		}
+	}
+
+	c.String(http.StatusOK, "Successfully uploaded %d challenges!", len(newChallenges))
 }

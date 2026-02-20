@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"gopher-ctf/ui/pages"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,3 +16,7 @@ func AdminLoginHandler(c *gin.Context) {
 		c.String(http.StatusOK, "Incorrect password")
 	}
 }
+
+func AdminIndexHandler(c *gin.Context) { Render(c, 200, pages.Admin()) }
+
+func AdminLoginPageHandler(c *gin.Context) { Render(c, 200, pages.AdminLogin()) }

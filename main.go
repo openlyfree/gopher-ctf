@@ -1,13 +1,13 @@
 package main
 
 import (
-	"gopher-ctf/internal"
-	"gopher-ctf/internal/shared"
 	"log"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/openlyfree/gopher-ctf/internal"
+	"github.com/openlyfree/gopher-ctf/internal/shared"
 )
 
 func main() {

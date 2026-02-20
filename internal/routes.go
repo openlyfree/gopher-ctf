@@ -28,7 +28,6 @@ func RegisterRoutes(router *gin.Engine) {
 	admin.GET("/", handlers.AdminIndexHandler)
 	admin.POST("/challenge", handlers.CreateChallengeHandler)
 	router.GET("/scoreboard", handlers.ScoreboardHandler)
-
 }
 
 func Render(c *gin.Context, status int, cmp templ.Component) {

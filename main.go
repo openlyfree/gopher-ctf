@@ -16,5 +16,5 @@ func main() {
 	router := gin.Default()
 	router.Use(sessions.Sessions("gopher_session", cookie.NewStore([]byte("really funky secret key that probably shouldn't be hardcoded"))))
 	internal.RegisterRoutes(router)
-	log.Fatal(router.Run("127.0.0.1:8080"))
+	log.Fatal(router.Run(":8080"))
 }

@@ -1,4 +1,4 @@
-﻿gopher-ctf.db
+﻿*.db
 tmp/
 *_templ.go
 *.exe

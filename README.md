@@ -7,3 +7,4 @@ capture the flag written in Go + HTMX + Templ
 - [ ] Better config
 - [ ] db options
 - [ ] Better UI
+- [ ] fix all the admin stuff

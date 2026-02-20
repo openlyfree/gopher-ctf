@@ -2,16 +2,16 @@ package handlers
 
 import (
 	"encoding/json"
-	"gopher-ctf/internal/models"
-	"gopher-ctf/internal/shared"
-	"gopher-ctf/ui/components"
-	"gopher-ctf/ui/pages"
 	"net/http"
 	"strconv"
 
 	"github.com/a-h/templ"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/openlyfree/gopher-ctf/internal/models"
+	"github.com/openlyfree/gopher-ctf/internal/shared"
+	"github.com/openlyfree/gopher-ctf/ui/components"
+	"github.com/openlyfree/gopher-ctf/ui/pages"
 	"gorm.io/gorm"
 )
 

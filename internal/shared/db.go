@@ -1,9 +1,9 @@
 package shared
 
 import (
-	"gopher-ctf/internal/models"
 	"log"
 
+	"github.com/openlyfree/gopher-ctf/internal/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )

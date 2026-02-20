@@ -1,4 +1,4 @@
-module gopher-ctf
+module github.com/openlyfree/gopher-ctf
 
 go 1.25
 

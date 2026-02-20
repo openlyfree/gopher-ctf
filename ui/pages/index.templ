@@ -2,7 +2,7 @@ package pages
 
 import (
 	"context"
-	"gopher-ctf/ui/components"
+	"github.com/openlyfree/gopher-ctf/ui/components"
 )
 
 func GetUser(ctx context.Context) string {
@@ -14,13 +14,12 @@ func GetUser(ctx context.Context) string {
 
 templ Index() {
 	@components.Layout("Gopher CTF") {
-			if GetUser(ctx) == "" {
-				<h1>Welcome to Gopher CTF!</h1>
-				<p>The fast, Go-powered CTF platform.</p>
-				<button hx-get="/register" hx-target="main">Join the CTF</button>
-			} else {
-			    <h1>Welcome back, { GetUser(ctx) }!</h1>
-			}
-
+		if GetUser(ctx) == "" {
+			<h1>Welcome to Gopher CTF!</h1>
+			<p>The fast, Go-powered CTF platform.</p>
+			<button hx-get="/register" hx-target="main">Join the CTF</button>
+		} else {
+			<h1>Welcome back, { GetUser(ctx) }!</h1>
+		}
 	}
 }

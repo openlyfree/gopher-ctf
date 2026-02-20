@@ -1,19 +1,19 @@
 package pages
 
-import "gopher-ctf/ui/components"
+import "github.com/openlyfree/gopher-ctf/ui/components"
 
 templ Admin() {
 	@components.Layout("Admin Dashboard") {
-			<p>uhh if ur not supposed to be here please leave, thank you</p> <!-- final and strongest defense -->
-			<p>upload challenges: </p>
-			<form
-				hx-post="/secret-candy-vault/challenge"
-				hx-target="#upload-result"
-				enctype="multipart/form-data"
-			>
-				<input type="file" name="challenge_file" accept="application/json"/>
-				<button type="submit">Submit</button>
-			</form>
-			<div id="upload-result"></div>
+		<p>uhh if ur not supposed to be here please leave, thank you</p> <!-- final and strongest defense -->
+		<p>upload challenges: </p>
+		<form
+			hx-post="/secret-candy-vault/challenge"
+			hx-target="#upload-result"
+			enctype="multipart/form-data"
+		>
+			<input type="file" name="challenge_file" accept="application/json"/>
+			<button type="submit">Submit</button>
+		</form>
+		<div id="upload-result"></div>
 	}
 }

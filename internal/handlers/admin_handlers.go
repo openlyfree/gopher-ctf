@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"gopher-ctf/ui/pages"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/openlyfree/gopher-ctf/ui/pages"
 )
 
 func AdminLoginHandler(c *gin.Context) {

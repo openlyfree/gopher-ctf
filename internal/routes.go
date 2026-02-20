@@ -1,11 +1,10 @@
 package internal
 
 import (
-	"gopher-ctf/internal/handlers"
-	"gopher-ctf/ui/pages"
-
 	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
+	"github.com/openlyfree/gopher-ctf/internal/handlers"
+	"github.com/openlyfree/gopher-ctf/ui/pages"
 )
 
 func RegisterRoutes(router *gin.Engine) {

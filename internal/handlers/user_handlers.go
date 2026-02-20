@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"gopher-ctf/internal/models"
-	"gopher-ctf/internal/shared"
-	"gopher-ctf/ui/pages"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/openlyfree/gopher-ctf/internal/models"
+	"github.com/openlyfree/gopher-ctf/internal/shared"
+	"github.com/openlyfree/gopher-ctf/ui/pages"
 	"golang.org/x/crypto/bcrypt"
 )
 

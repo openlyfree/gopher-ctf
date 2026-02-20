@@ -3,8 +3,8 @@ package shared
 import (
 	"log"
 
+	"github.com/glebarez/sqlite"
 	"github.com/openlyfree/gopher-ctf/internal/models"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 

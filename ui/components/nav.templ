@@ -13,16 +13,16 @@ templ Nav() {
 	<nav>
 		<div class="links">
 			<a href="/">Home</a>
-			<a hx-get="/challenges" hx-target="main">Challenges</a>
+			<a hx-get="/challenges" hx-target="main" hx-replace-url="true">Challenges</a>
 			<a hx-get="/scoreboard" hx-target="main">Scoreboard</a>
 		</div>
 		<div class="usr">
 			if username := GetUser(ctx); username != "" {
 				<a>{ username }</a>
-				<a hx-post="/logout" hx-target="body">Logout</a>
+				<a hx-post="/logout" hx-target="body" hx-replace-url="true">Logout</a>
 			} else {
-				<a hx-get="/login" hx-target="main">Log in</a>
-				<a hx-get="/register" hx-target="main">Register</a>
+				<a hx-get="/login" hx-target="main" hx-replace-url="true">Log in</a>
+				<a hx-get="/register" hx-target="main" hx-replace-url="true">Register</a>
 			}
 		</div>
 	</nav>

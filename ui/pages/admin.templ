@@ -4,16 +4,28 @@ import "github.com/openlyfree/gopher-ctf/ui/components"
 
 templ Admin() {
 	@components.Layout("Admin Dashboard") {
-		<p>uhh if ur not supposed to be here please leave, thank you</p> <!-- final and strongest defense -->
-		<p>upload challenges: </p>
-		<form
-			hx-post="/secret-candy-vault/challenge"
-			hx-target="#upload-result"
-			enctype="multipart/form-data"
-		>
-			<input type="file" name="challenge_file" accept="application/json"/>
-			<button type="submit">Submit</button>
-		</form>
-		<div id="upload-result"></div>
+		<div class="admin">
+			<p>uhh if ur not supposed to be here please leave, thank you :D</p> <!-- final and strongest defense -->
+			<p>upload challenges: </p>
+			<form
+				hx-post="/secret-candy-vault/challenge"
+				hx-target="#upload-result"
+				enctype="multipart/form-data"
+			>
+				<input type="file" name="challenge_file" accept="application/json"/>
+				<button type="submit">Submit</button>
+			</form>
+			<p>format: </p>
+			<pre><!-- DONT YOU DARE CHANGE THIS OR I WILL SMITE YOU-->
+            <code>{ `{
+    "name": "challenge name",
+    "description": "challenge description",
+    "points": 100,
+    "flag": "flag{this_is_a_flag}"
+}` }</code>
+            </pre>
+            <p>like a list of those</p>
+			<div id="upload-result"></div>
+		</div>
 	}
 }

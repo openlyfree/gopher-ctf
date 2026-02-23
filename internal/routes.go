@@ -8,7 +8,11 @@ import (
 )
 
 func RegisterRoutes(router *gin.Engine) {
-	router.Static("/static", "./ui/static")
+	staticGroup := router.Group("/static")
+	if gin.IsDebugging() {
+		staticGroup.Use(NoCache())
+	}
+	staticGroup.Static("/", "./ui/static")
 	router.Use(UserLoader())
 	router.GET("/", func(c *gin.Context) { Render(c, 200, pages.Index()) })
 	router.GET("/login", handlers.LoginPageHandler)

@@ -1,5 +1,4 @@
 
-
 html, body {
     height: 100%;
     width: 100%;
@@ -21,7 +20,7 @@ nav {
     font-size: 15px;
 }
 
-main:not(:has(div.scoreboard-container)):not(:has(div.challenges-container)) {
+main:not(:has(div.scoreboard-container)):not(:has(div.challenges-container)):not(:has(div.admin)) {
     position: absolute;
     left: 50%;
     top: 50%;
@@ -35,7 +34,16 @@ main:has(div.challenges-container), main:has(div.scoreboard-container) {
     flex-direction: row;
     gap: 20px;
     padding: 0 20px 20px;
+
 }
+
+main:has(div.admin) {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
 
 nav a {
     color: var(--primary);
@@ -47,25 +55,39 @@ nav a {
 }
 
 button, input {
-    background: var(--secondary);
+    background: rgba(35, 35, 35, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     color: var(--primary);
     font-family: "Cascadia Code", Monospaced, monospace;
     padding: 10px 20px;
     cursor: pointer;
     font-size: 15px;
-    border: none;
-    border-radius: 12px;
+    border-radius: 13px;
+}
+h1 {
+    justify-content: center;
+    text-align: center;
 }
 
-input::placeholder {
-    color: var(--primary);
-    font-family: "Cascadia Code", Monospaced, monospace;
-}
-
-input:focus{
+input:focus {
     outline: none;
     box-shadow: 0 0 5px var(--secondary);
 }
+
+input::placeholder {
+    font-family: "Cascadia Code", Monospaced, monospace;
+    color: var(--primary);
+    opacity: 0.1;
+}
+
+div.admin {
+    text-align: left;
+    justify-content: center;
+}
+
 
 .login, .signup {
     display: flex;
@@ -77,8 +99,8 @@ input:focus{
 :root {
     font-family: "Cascadia Code", Monospaced, monospace;
     --primary: white;
-    --secondary: #232323;
+    --secondary: rgba(35, 35, 35, 0.5);
     color: var(--primary);
     background: var(--secondary);
-    font-size: 12px;
+    font-size: 13px;
 }

@@ -13,8 +13,8 @@ templ Challenges(challenges []models.Challenge) {
 			for _, c := range challenges {
 				<div class="challenge-card">
 					<h2>{ c.Title }</h2>
-					<p>{ c.Description }</p>
-					<button hx-get={ "/challenges/" + strconv.Itoa(int(c.ID)) } hx-target="main">View Challenge</button>
+					<p>Points: { strconv.Itoa(int(c.Points)) }</p>
+					<button hx-get={ "/challenges/" + strconv.Itoa(int(c.ID))  } hx-replace-url="true" hx-target="main">View Challenge</button>
 				</div>
 			}
 		</div>

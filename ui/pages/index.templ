@@ -13,10 +13,11 @@ func GetUser(ctx context.Context) string {
 }
 
 templ Index() {
-	@components.Layout("Gopher CTF") {
+	@components.Layout("Home") {
 		if GetUser(ctx) == "" {
 			<h1>Welcome to Gopher CTF!</h1>
-			<p>The fast, Go-powered CTF platform.</p>
+			<p>im js gonna name it gopher ctf until we actually have a name</p>
+			<p>idk i was thinking firebird ctf but well decide today</p>
 			<button hx-get="/register" hx-target="main" hx-replace-url="true" >Join the CTF</button>
 		} else {
 			<h1>Welcome back, { GetUser(ctx) }!</h1>

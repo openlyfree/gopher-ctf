@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/openlyfree/gopher-ctf/internal/shared"
 )
 
 func UserLoader() gin.HandlerFunc {
@@ -19,7 +20,7 @@ func UserLoader() gin.HandlerFunc {
 func AdminAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cookie, err := c.Cookie("secret_candy_vault_access")
-		if err != nil || cookie != "levraiglooby26" { //yes its hardcoded fuck you
+		if err != nil || cookie != shared.Config.Password {
 			c.AbortWithStatus(404)
 			return
 		}

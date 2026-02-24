@@ -11,10 +11,10 @@ import (
 )
 
 func main() {
+	shared.InitConfig()
 	shared.DB = shared.InitDB()
-
 	router := gin.Default()
-	router.Use(sessions.Sessions("gopher_session", cookie.NewStore([]byte("really funky secret key that probably shouldn't be hardcoded"))))
+	router.Use(sessions.Sessions("gopher_session", cookie.NewStore([]byte(shared.Config.Key))))
 	internal.RegisterRoutes(router)
 	log.Fatal(router.Run(":8080"))
 }

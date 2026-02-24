@@ -1,6 +1,5 @@
 ﻿*.db
 tmp/
-*_templ.go
 *.exe
 ui/*.go
 /ctf.db-shm

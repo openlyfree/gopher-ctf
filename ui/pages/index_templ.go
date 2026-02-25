@@ -54,7 +54,7 @@ func Index() templ.Component {
 			}
 			ctx = templ.InitializeContext(ctx)
 			if GetUser(ctx) == "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h1>Welcome to Gopher CTF!</h1><p>im js gonna name it gopher ctf until we actually have a name</p><p>idk i was thinking firebird ctf but well decide today</p><button hx-get=\"/register\" hx-target=\"main\" hx-replace-url=\"true\">Join the CTF</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<h1>Welcome to Gopher CTF!</h1><p>its actually firebird ctf but i dont rly feel like updating it</p><p>ill do it later</p><button hx-get=\"/register\" hx-target=\"main\" hx-replace-url=\"true\">Join the CTF</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -66,7 +66,7 @@ func Index() templ.Component {
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(GetUser(ctx))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/pages/index.templ`, Line: 23, Col: 35}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/pages/index.templ`, Line: 24, Col: 35}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {

@@ -29,12 +29,14 @@ func SubmitFlagHandler(c *gin.Context) {
 
 	challengeID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
+		_ = c.Error(err)
 		c.String(http.StatusBadRequest, "Invalid challenge ID")
 		return
 	}
 
 	var challenge models.Challenge
 	if err := shared.DB.First(&challenge, challengeID).Error; err != nil {
+		_ = c.Error(err)
 		c.String(http.StatusNotFound, "Challenge not found")
 		return
 	}
@@ -47,7 +49,9 @@ func SubmitFlagHandler(c *gin.Context) {
 
 	var count int64
 	if err := shared.DB.Model(&models.ChallengeCompletion{}).Where("user_id = ? AND challenge_id = ?", userID, challengeID).Count(&count).Error; err != nil {
+		_ = c.Error(err)
 		c.String(http.StatusInternalServerError, "Database error")
+
 		return
 	}
 	if count > 0 {
@@ -62,17 +66,20 @@ func SubmitFlagHandler(c *gin.Context) {
 		ChallengeID: uint(challengeID),
 	}).Error; err != nil {
 		tx.Rollback()
+		_ = c.Error(err)
 		c.String(http.StatusInternalServerError, "Database error")
 		return
 	}
 
 	if err := tx.Model(&models.User{}).Where("id = ?", userID).Update("score", gorm.Expr("score + ?", challenge.Points)).Error; err != nil {
 		tx.Rollback()
+		_ = c.Error(err)
 		c.String(http.StatusInternalServerError, "Database error")
 		return
 	}
 
 	if err := tx.Commit().Error; err != nil {
+		_ = c.Error(err)
 		c.String(http.StatusInternalServerError, "Database error")
 		return
 	}
@@ -81,12 +88,12 @@ func SubmitFlagHandler(c *gin.Context) {
 }
 
 func GetChallenge(id string) (models.Challenge, error) {
-	tempId, err := strconv.Atoi(id)
+	tempID, err := strconv.Atoi(id)
 	if err != nil {
 		return models.Challenge{}, err
 	}
 	var challenge models.Challenge
-	if err := shared.DB.First(&challenge, tempId).Error; err != nil {
+	if err := shared.DB.First(&challenge, tempID).Error; err != nil {
 		return models.Challenge{}, err
 	}
 	return challenge, nil
@@ -95,6 +102,7 @@ func GetChallenge(id string) (models.Challenge, error) {
 func ChallengeIndividualHandler(c *gin.Context) {
 	challenge, err := GetChallenge(c.Param("id"))
 	if err != nil {
+		_ = c.Error(err)
 		c.Status(http.StatusNotFound)
 		return
 	}
@@ -113,6 +121,7 @@ func Render(c *gin.Context, status int, cmp templ.Component) {
 func ChallengeIndexHandler(c *gin.Context) {
 	var challenges []models.Challenge
 	if err := shared.DB.Find(&challenges).Error; err != nil {
+		_ = c.Error(err)
 		c.String(http.StatusInternalServerError, "Database error")
 		return
 	}
@@ -126,24 +135,27 @@ func ChallengeIndexHandler(c *gin.Context) {
 func CreateChallengeHandler(c *gin.Context) {
 	file, err := c.FormFile("challenge_file")
 	if err != nil {
+		_ = c.Error(err)
 		c.String(http.StatusBadRequest, "File upload error")
 		return
 	}
 	openedFile, err := file.Open()
 	if err != nil {
+		_ = c.Error(err)
 		c.String(http.StatusInternalServerError, "File open error")
 		return
 	}
-	defer openedFile.Close()
 
 	var newChallenges []models.Challenge
 	if err := json.NewDecoder(openedFile).Decode(&newChallenges); err != nil {
+		_ = c.Error(err)
 		c.String(http.StatusBadRequest, "Invalid JSON format")
 		return
 	}
-
+	_ = openedFile.Close()
 	for _, challenge := range newChallenges {
 		if err := shared.DB.Create(&challenge).Error; err != nil {
+			_ = c.Error(err)
 			c.String(http.StatusInternalServerError, "Database error")
 			return
 		}

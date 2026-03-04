@@ -3,7 +3,6 @@ package shared
 import (
 	"crypto/rand"
 	"encoding/json"
-	"fmt"
 	"log"
 	"math/big"
 	"os"
@@ -24,21 +23,23 @@ func InitConfig() {
 	}
 	err = json.Unmarshal(f, &Config)
 	if err != nil {
-		log.Fatal("Failed to parse config file:", err)
+		log.Panicln("Failed to parse config file: ", err)
 	}
 }
+
 func RandString(length int) string {
 	const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
 	res := make([]byte, length)
 	for i := range res {
 		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
 		if err != nil {
-			log.Fatal(err)
+			log.Panicln(err)
 		}
 		res[i] = charset[num.Int64()]
 	}
 	return string(res)
 }
+
 func GenConfig() {
 	cfg := ConfigData{
 		Key:      RandString(20),
@@ -47,7 +48,7 @@ func GenConfig() {
 
 	f, err := os.Create("config.json")
 	if err != nil {
-		log.Fatalf("failed to create config file: %v", err)
+		log.Panicln("failed to create config file: ", err)
 	}
 	defer func(f *os.File) {
 		err := f.Close()
@@ -60,10 +61,10 @@ func GenConfig() {
 	if err != nil {
 		return
 	}
-	fmt.Println("AdminPass: ", cfg.Password)
+	log.Println("AdminPass: ", cfg.Password)
 	written, err := f.Write(enc)
 	if err != nil || written != len(enc) {
-		log.Fatal("Failed to write config file")
+		log.Panicln("Failed to write config file")
 	}
 	Config = cfg
 }

@@ -17,17 +17,17 @@ func InitDB() *gorm.DB {
 		PrepareStmt:            true,
 	})
 	if err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 	}
 
 	if err := db.AutoMigrate(&models.User{}); err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 	}
 	if err := db.AutoMigrate(&models.Challenge{}); err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 	}
 	if err := db.AutoMigrate(&models.ChallengeCompletion{}); err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 	}
 
 	return db

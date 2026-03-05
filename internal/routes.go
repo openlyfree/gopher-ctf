@@ -30,6 +30,7 @@ func RegisterRoutes(router *gin.Engine) {
 	admin.Use(AdminAuth())
 	admin.GET("/", handlers.AdminIndexHandler)
 	admin.POST("/challenge", handlers.CreateChallengeHandler)
+	admin.POST("/reload-config", handlers.ConfigReloadHandler)
 	router.GET("/scoreboard", handlers.ScoreboardHandler)
 }
 

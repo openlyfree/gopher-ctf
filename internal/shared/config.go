@@ -9,8 +9,10 @@ import (
 )
 
 type ConfigData struct {
-	Key      string `json:"key"`
-	Password string `json:"password"`
+	Key         string `json:"key"`
+	Password    string `json:"password"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 var Config ConfigData
@@ -46,8 +48,10 @@ func RandString(length int) string {
 
 func GenConfig() {
 	cfg := ConfigData{
-		Key:      RandString(20),
-		Password: RandString(10),
+		Key:         RandString(20),
+		Password:    RandString(10),
+		Name:        "Gopher CTF",
+		Description: "A CTF platform built with Go",
 	}
 
 	f, err := os.Create("ctf/config.json")

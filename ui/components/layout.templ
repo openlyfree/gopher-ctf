@@ -1,11 +1,12 @@
 package components
 
+import "github.com/openlyfree/gopher-ctf/internal/shared"
 templ Layout(title string) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
-			<title>{ title } | Gopher CTF</title>
+			<title>{ title } | {shared.Config.Name}</title>
 			<script src="https://unpkg.com/htmx.org@1.9.10"></script>
 			<link rel="stylesheet" href="/static/css/style.css?v=1.0.1"/>
 		</head>

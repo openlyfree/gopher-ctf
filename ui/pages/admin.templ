@@ -26,6 +26,9 @@ templ Admin() {
             </pre>
             <p>like a list of those</p>
 			<div id="upload-result"></div>
+      <form hx-post="/secret-candy-vault/reload-config" hx-target="#upload-result">
+        <button type="submit">Reload config</button>
+      </form>
 		</div>
 	}
 }

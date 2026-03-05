@@ -29,3 +29,8 @@ func AdminLoginHandler(c *gin.Context) {
 func AdminIndexHandler(c *gin.Context) { Render(c, 200, pages.Admin()) }
 
 func AdminLoginPageHandler(c *gin.Context) { Render(c, 200, pages.AdminLogin()) }
+
+func ConfigReloadHandler(c *gin.Context) {
+	shared.InitConfig()
+	c.String(http.StatusOK, "Config reloaded")
+}

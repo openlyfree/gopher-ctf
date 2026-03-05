@@ -11,7 +11,7 @@ import (
 var DB *gorm.DB
 
 func InitDB() *gorm.DB {
-	dsn := "ctf.db?_pragma=journal_mode(WAL)&_pragma=synchronous(normal)&_pragma=busy_timeout(5000)"
+	dsn := "ctf/ctf.db?_pragma=journal_mode(WAL)&_pragma=synchronous(normal)&_pragma=busy_timeout(5000)"
 	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{
 		SkipDefaultTransaction: true,
 		PrepareStmt:            true,

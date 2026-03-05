@@ -16,7 +16,11 @@ type ConfigData struct {
 var Config ConfigData
 
 func InitConfig() {
-	f, err := os.ReadFile("config.json")
+	err := os.MkdirAll("ctf", 0o755)
+	if err != nil {
+		log.Panicln("Failed to create ctf directory: ", err)
+	}
+	f, err := os.ReadFile("ctf/config.json")
 	if err != nil {
 		GenConfig()
 		return
@@ -46,7 +50,7 @@ func GenConfig() {
 		Password: RandString(10),
 	}
 
-	f, err := os.Create("config.json")
+	f, err := os.Create("ctf/config.json")
 	if err != nil {
 		log.Panicln("failed to create config file: ", err)
 	}

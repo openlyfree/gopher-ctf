@@ -4,3 +4,5 @@ tmp/
 ui/*.go
 /ctf.db-shm
 /ctf.db-wal
+ctf/
+.idea/

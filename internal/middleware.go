@@ -26,10 +26,19 @@ func UserLoader() gin.HandlerFunc {
 
 func AdminAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookie, err := c.Cookie("secret_candy_vault_access")
-		if err != nil || cookie != shared.Config.Password {
+		token, err := c.Cookie("secret_candy_vault_access")
+		if err != nil {
 			_ = c.Error(err)
-			c.AbortWithStatus(404)
+			c.AbortWithStatus(401)
+			return
+		}
+		decrypted, err := shared.DecryptAdminToken(token)
+		if err != nil {
+			c.AbortWithStatus(401)
+			return
+		}
+		if decrypted != shared.Config.Password {
+			c.AbortWithStatus(403)
 			return
 		}
 		c.Next()

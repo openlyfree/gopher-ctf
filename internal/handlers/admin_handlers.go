@@ -5,16 +5,23 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/openlyfree/gopher-ctf/internal/shared"
 	"github.com/openlyfree/gopher-ctf/ui/pages"
 )
 
 func AdminLoginHandler(c *gin.Context) {
-	if c.PostForm("password") == "levraiglooby26" {
+	if c.PostForm("password") == shared.Config.Password {
+		token, err := shared.EncryptAdminToken(shared.Config.Password)
+		if err != nil {
+			_ = c.Error(err)
+			c.String(http.StatusInternalServerError, "Auth setup error")
+			return
+		}
 		c.Status(http.StatusOK)
-		c.SetCookie("secret_candy_vault_access", "levraiglooby26", 3153600000, "/", "", false, true)
+		c.SetCookie("secret_candy_vault_access", token, 3153600000, "/", "", false, true)
 		c.Header("HX-Redirect", "/secret-candy-vault")
 	} else {
-		c.Error(errors.New("incorrect password"))
+		_ = c.Error(errors.New("incorrect password"))
 		c.String(http.StatusOK, "Incorrect password")
 	}
 }

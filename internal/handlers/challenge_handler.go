@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"net/http"
 	"strconv"
 
 	"github.com/a-h/templ"
@@ -18,44 +17,44 @@ import (
 func SubmitFlagHandler(c *gin.Context) {
 	userIDVal := sessions.Default(c).Get("user_id")
 	if userIDVal == nil {
-		c.String(http.StatusUnauthorized, "Login required")
+		c.String(200, "Login required")
 		return
 	}
 	userID, ok := userIDVal.(uint)
 	if !ok {
-		c.String(http.StatusInternalServerError, "Session error")
+		c.String(200, "Session error")
 		return
 	}
 
 	challengeID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		_ = c.Error(err)
-		c.String(http.StatusBadRequest, "Invalid challenge ID")
+		c.String(200, "Invalid challenge ID")
 		return
 	}
 
 	var challenge models.Challenge
 	if err := shared.DB.First(&challenge, challengeID).Error; err != nil {
 		_ = c.Error(err)
-		c.String(http.StatusNotFound, "Challenge not found")
+		c.String(200, "Challenge not found")
 		return
 	}
 
 	submittedFlag := c.PostForm("flag")
 	if submittedFlag != challenge.Flag {
-		c.String(http.StatusOK, "Incorrect flag")
+		c.String(200, "Incorrect flag")
 		return
 	}
 
 	var count int64
 	if err := shared.DB.Model(&models.ChallengeCompletion{}).Where("user_id = ? AND challenge_id = ?", userID, challengeID).Count(&count).Error; err != nil {
 		_ = c.Error(err)
-		c.String(http.StatusInternalServerError, "Database error")
+		c.String(200, "Database error")
 
 		return
 	}
 	if count > 0 {
-		c.String(http.StatusOK, "Already completed!")
+		c.String(200, "Already completed!")
 		return
 	}
 
@@ -67,24 +66,24 @@ func SubmitFlagHandler(c *gin.Context) {
 	}).Error; err != nil {
 		tx.Rollback()
 		_ = c.Error(err)
-		c.String(http.StatusInternalServerError, "Database error")
+		c.String(200, "Database error")
 		return
 	}
 
 	if err := tx.Model(&models.User{}).Where("id = ?", userID).Update("score", gorm.Expr("score + ?", challenge.Points)).Error; err != nil {
 		tx.Rollback()
 		_ = c.Error(err)
-		c.String(http.StatusInternalServerError, "Database error")
+		c.String(200, "Database error")
 		return
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		_ = c.Error(err)
-		c.String(http.StatusInternalServerError, "Database error")
+		c.String(200, "Database error")
 		return
 	}
 
-	c.String(http.StatusOK, "Correct! +%d points", challenge.Points)
+	c.String(200, "Correct! +%d points", challenge.Points)
 }
 
 func GetChallenge(id string) (models.Challenge, error) {
@@ -103,7 +102,7 @@ func ChallengeIndividualHandler(c *gin.Context) {
 	challenge, err := GetChallenge(c.Param("id"))
 	if err != nil {
 		_ = c.Error(err)
-		c.Status(http.StatusNotFound)
+		c.Status(200)
 		return
 	}
 	if c.GetHeader("HX-Request") == "true" {
@@ -122,7 +121,7 @@ func ChallengeIndexHandler(c *gin.Context) {
 	var challenges []models.Challenge
 	if err := shared.DB.Find(&challenges).Error; err != nil {
 		_ = c.Error(err)
-		c.String(http.StatusInternalServerError, "Database error")
+		c.String(200, "Database error")
 		return
 	}
 	if c.GetHeader("HX-Request") == "true" {
@@ -136,30 +135,30 @@ func CreateChallengeHandler(c *gin.Context) {
 	file, err := c.FormFile("challenge_file")
 	if err != nil {
 		_ = c.Error(err)
-		c.String(http.StatusBadRequest, "File upload error")
+		c.String(200, "File upload error")
 		return
 	}
 	openedFile, err := file.Open()
 	if err != nil {
 		_ = c.Error(err)
-		c.String(http.StatusInternalServerError, "File open error")
+		c.String(200, "File open error")
 		return
 	}
 
 	var newChallenges []models.Challenge
 	if err := json.NewDecoder(openedFile).Decode(&newChallenges); err != nil {
 		_ = c.Error(err)
-		c.String(http.StatusBadRequest, "Invalid JSON format")
+		c.String(200, "Invalid JSON format")
 		return
 	}
 	_ = openedFile.Close()
 	for _, challenge := range newChallenges {
 		if err := shared.DB.Create(&challenge).Error; err != nil {
 			_ = c.Error(err)
-			c.String(http.StatusInternalServerError, "Database error")
+			c.String(200, "Database error")
 			return
 		}
 	}
 
-	c.String(http.StatusOK, "Successfully uploaded %d challenges!", len(newChallenges))
+	c.String(200, "Successfully uploaded %d challenges!", len(newChallenges))
 }

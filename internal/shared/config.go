@@ -2,35 +2,48 @@ package shared
 
 import (
 	"crypto/rand"
-	"encoding/json"
 	"log"
 	"math/big"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type ConfigData struct {
-	Key         string `json:"key"`
-	Password    string `json:"password"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Key         string
+	Password    string
+	Name        string
+	Description string
 }
 
 var Config ConfigData
 
 func InitConfig() {
-	err := os.MkdirAll("ctf", 0o755)
-	if err != nil {
-		log.Panicln("Failed to create ctf directory: ", err)
+	_ = godotenv.Load()
+
+	Config = ConfigData{
+		Key:         envOrDefault("CTF_KEY", ""),
+		Password:    envOrDefault("CTF_PASSWORD", ""),
+		Name:        envOrDefault("CTF_NAME", "Gopher CTF"),
+		Description: envOrDefault("CTF_DESCRIPTION", "A CTF platform built with Go"),
 	}
-	f, err := os.ReadFile("ctf/config.json")
-	if err != nil {
-		GenConfig()
-		return
+
+	if Config.Key == "" {
+		Config.Key = RandString(20)
+		log.Println("CTF_KEY not set, generated random key")
 	}
-	err = json.Unmarshal(f, &Config)
-	if err != nil {
-		log.Panicln("Failed to parse config file: ", err)
+	if Config.Password == "" {
+		Config.Password = RandString(10)
+		log.Println("CTF_PASSWORD not set, generated random password")
+		log.Println("AdminPass: ", Config.Password)
 	}
+}
+
+func envOrDefault(key, fallback string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return fallback
 }
 
 func RandString(length int) string {
@@ -44,35 +57,4 @@ func RandString(length int) string {
 		res[i] = charset[num.Int64()]
 	}
 	return string(res)
-}
-
-func GenConfig() {
-	cfg := ConfigData{
-		Key:         RandString(20),
-		Password:    RandString(10),
-		Name:        "Gopher CTF",
-		Description: "A CTF platform built with Go",
-	}
-
-	f, err := os.Create("ctf/config.json")
-	if err != nil {
-		log.Panicln("failed to create config file: ", err)
-	}
-	defer func(f *os.File) {
-		err := f.Close()
-		if err != nil {
-			return
-		}
-	}(f)
-
-	enc, err := json.Marshal(cfg)
-	if err != nil {
-		return
-	}
-	log.Println("AdminPass: ", cfg.Password)
-	written, err := f.Write(enc)
-	if err != nil || written != len(enc) {
-		log.Panicln("Failed to write config file")
-	}
-	Config = cfg
 }

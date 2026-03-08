@@ -14,7 +14,7 @@ templ Nav() {
 		<div class="links">
 			<a href="/">Home</a>
 			<a hx-get="/challenges" hx-target="main" hx-replace-url="true">Challenges</a>
-			<a hx-get="/scoreboard" hx-target="main">Scoreboard</a>
+			<a hx-get="/scoreboard" hx-target="main" hx-replace-url="true">Scoreboard</a>
 		</div>
 		<div class="usr">
 			if username := GetUser(ctx); username != "" {

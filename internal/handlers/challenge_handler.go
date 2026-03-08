@@ -1,7 +1,9 @@
 package handlers
 
 import (
-	"encoding/json"
+	"fmt"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/a-h/templ"
@@ -132,33 +134,51 @@ func ChallengeIndexHandler(c *gin.Context) {
 }
 
 func CreateChallengeHandler(c *gin.Context) {
-	file, err := c.FormFile("challenge_file")
-	if err != nil {
-		_ = c.Error(err)
-		c.String(200, "File upload error")
-		return
-	}
-	openedFile, err := file.Open()
-	if err != nil {
-		_ = c.Error(err)
-		c.String(200, "File open error")
+	name := c.PostForm("challenge_name")
+	description := c.PostForm("challenge_description")
+	pointsStr := c.PostForm("challenge_points")
+	flag := c.PostForm("challenge_flag")
+
+	if name == "" || description == "" || pointsStr == "" {
+		c.String(200, "All fields are required")
 		return
 	}
 
-	var newChallenges []models.Challenge
-	if err := json.NewDecoder(openedFile).Decode(&newChallenges); err != nil {
+	points, err := strconv.Atoi(pointsStr)
+	if err != nil {
 		_ = c.Error(err)
-		c.String(200, "Invalid JSON format")
+		c.String(200, "Invalid points value")
 		return
 	}
-	_ = openedFile.Close()
-	for _, challenge := range newChallenges {
-		if err := shared.DB.Create(&challenge).Error; err != nil {
+
+	challenge := models.Challenge{
+		Title:       name,
+		Description: description,
+		Points:      points,
+		Flag:        flag,
+	}
+
+	if err := shared.DB.Create(&challenge).Error; err != nil {
+		_ = c.Error(err)
+		c.String(200, "Database error")
+		return
+	}
+
+	file, err := c.FormFile("challenge_files")
+	if err == nil {
+		challengeDir := filepath.Join("ctf", "challenges", fmt.Sprintf("%d", challenge.ID))
+		if err := os.MkdirAll(challengeDir, 0o755); err != nil {
 			_ = c.Error(err)
-			c.String(200, "Database error")
+			c.String(200, "Challenge created but failed to create directory")
+			return
+		}
+		dst := filepath.Join(challengeDir, file.Filename)
+		if err := c.SaveUploadedFile(file, dst); err != nil {
+			_ = c.Error(err)
+			c.String(200, "Challenge created but failed to save file")
 			return
 		}
 	}
 
-	c.String(200, "Successfully uploaded %d challenges!", len(newChallenges))
+	c.String(200, "Challenge '%s' created! (%d pts)", name, points)
 }

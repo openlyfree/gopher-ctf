@@ -9,16 +9,10 @@ import (
 	"github.com/openlyfree/gopher-ctf/internal/shared"
 )
 
-type contextKey int
-
-const (
-	userKey contextKey = iota
-)
-
 func UserLoader() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if val := sessions.Default(c).Get("username"); val != nil {
-			c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), userKey, val))
+			c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), "username", val))
 		}
 		c.Next()
 	}

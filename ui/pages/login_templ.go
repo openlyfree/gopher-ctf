@@ -31,7 +31,7 @@ func Login() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form hx-post=\"/login\" hx-target=\"#error-msg\"><div class=\"login\"><label><input type=\"text\" name=\"username\" placeholder=\"Username\" required></label> <label><input type=\"password\" name=\"password\" placeholder=\"Password\" required></label> <button type=\"submit\">Log in</button><div id=\"error-msg\"></div></div></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"login\"><h2>Log in</h2><form class=\"panel__form\" hx-post=\"/login\" hx-target=\"#error-msg\"><label class=\"panel__field\"><span>username</span> <input type=\"text\" name=\"username\" placeholder=\"Username\" required></label> <label class=\"panel__field\"><span>password</span> <input type=\"password\" name=\"password\" placeholder=\"Password\" required></label> <button type=\"submit\">Log in</button></form><div id=\"error-msg\" class=\"panel__result\"></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

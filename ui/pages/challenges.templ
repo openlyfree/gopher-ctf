@@ -8,14 +8,18 @@ import (
 
 templ Challenges(challenges []models.Challenge) {
 	<div class="challenges-container">
-		<h1>Challenges</h1>
 		<div class="challenges-grid">
 			for _, c := range challenges {
 				<div class="challenge-card">
-					<h2>{ c.Title }</h2>
-					<p>Points: { strconv.Itoa(int(c.Points)) }</p>
-					<button hx-get={ "/challenges/" + strconv.Itoa(int(c.ID))  } hx-replace-url="true" hx-target="main">View Challenge</button>
+					<div class="challenge-card-header">
+						<h2>{ c.Title }</h2>
+						<span class="challenge-points">{ strconv.Itoa(int(c.Points)) } pts</span>
+					</div>
+					<button class="challenge-btn" hx-get={ "/challenges/" + strconv.Itoa(int(c.ID)) } hx-replace-url="true" hx-target="main">View Challenge</button>
 				</div>
+			}
+			if len(challenges) == 0 {
+				<p class="no-challenges">No challenges available yet. Check back soon!</p>
 			}
 		</div>
 	</div>

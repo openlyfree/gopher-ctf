@@ -60,14 +60,14 @@ func ChallengeCard(c models.Challenge) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p><form><label><input type=\"text\" name=\"flag\" placeholder=\"Enter flag\" required></label> <button type=\"submit\" hx-post=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p><form class=\"panel__form\"><label class=\"panel__field\"><span>flag</span> <input type=\"text\" name=\"flag\" placeholder=\"flag{...}\" required></label> <button type=\"submit\" hx-post=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("/challenges/" + strconv.Itoa(int(c.ID)) + "/submit")
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/challenge_card.templ`, Line: 16, Col: 87}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `ui/components/challenge_card.templ`, Line: 17, Col: 87}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {

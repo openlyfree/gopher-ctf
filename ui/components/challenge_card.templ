@@ -9,9 +9,10 @@ templ ChallengeCard(c models.Challenge) {
 	<div class="challenge-detail">
 		<h1>{ c.Title }</h1>
 		<p>{ c.Description }</p>
-		<form>
-			<label>
-				<input type="text" name="flag" placeholder="Enter flag" required/>
+		<form class="panel__form">
+			<label class="panel__field">
+				<span>flag</span>
+				<input type="text" name="flag" placeholder="flag{...}" required/>
 			</label>
 			<button type="submit" hx-post={ "/challenges/" + strconv.Itoa(int(c.ID)) + "/submit" } hx-target="main">Submit</button>
 		</form>

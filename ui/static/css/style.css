@@ -1,10 +1,16 @@
 html,
 body {
-  height: 100%;
+  min-height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
   background-color: rgb(15, 15, 21);
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
 nav {
@@ -32,12 +38,21 @@ main:has(div.scoreboard-container) {
   padding: 0 20px 20px;
 }
 
-main:has(div.admin),
-main:has(div.challenge-detail) {
+main:has(div.admin) {
   width: 100%;
   display: flex;
   justify-content: center;
   padding: 0 20px 40px;
+  box-sizing: border-box;
+}
+
+main:has(div.challenge-detail) {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
   box-sizing: border-box;
 }
 
@@ -141,7 +156,7 @@ div.admin {
 }
 
 .challenge-detail {
-  margin-top: 20px;
+  margin: 0;
 }
 
 .login h2,
@@ -576,7 +591,7 @@ div.admin {
   }
 
   main:has(div.challenge-detail) {
-    padding: 0 16px 24px;
+    padding: 16px;
   }
 
   .login,
@@ -585,7 +600,7 @@ div.admin {
   }
 
   .challenge-detail {
-    margin-top: 8px;
+    margin: 0;
     padding: 24px;
   }
 }

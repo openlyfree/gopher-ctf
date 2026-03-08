@@ -2,17 +2,22 @@ package shared
 
 import (
 	"log"
+	"os"
 
-	"github.com/glebarez/sqlite"
 	"github.com/openlyfree/gopher-ctf/internal/models"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 
 func InitDB() *gorm.DB {
-	dsn := "ctf/ctf.db?_pragma=journal_mode(WAL)&_pragma=synchronous(normal)&_pragma=busy_timeout(5000)"
-	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		log.Panicln("DATABASE_URL environment variable not set")
+	}
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		SkipDefaultTransaction: true,
 		PrepareStmt:            true,
 	})

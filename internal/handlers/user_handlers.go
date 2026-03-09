@@ -45,6 +45,11 @@ func LoginHandler(c *gin.Context) {
 }
 
 func RegisterHandler(c *gin.Context) {
+	if goaway.IsProfane(c.PostForm("username")) {
+		c.String(200, "Invalid Username")
+		return
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(c.PostForm("password")), 14)
 	if err != nil {
 		c.String(200, "Error creating account")
@@ -55,12 +60,6 @@ func RegisterHandler(c *gin.Context) {
 		c.String(200, "Username already taken")
 		return
 	}
-
-	if goaway.IsProfane(c.PostForm("username")) {
-		c.String(200, "Invalid Username")
-		return
-	}
-
 	c.Header("HX-Redirect", "/login")
 	c.Status(200)
 }

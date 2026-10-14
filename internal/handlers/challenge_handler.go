@@ -137,7 +137,7 @@ func ChallengeIndividualHandler(c *gin.Context) {
 		return
 	}
 	if c.GetHeader("HX-Request") == "true" {
-		Render(c, 200, components.ChallengeCard(challenge, completed[challenge.ID]))
+		RenderPageFragment(c, "Challenge: "+challenge.Title, components.ChallengeCard(challenge, completed[challenge.ID]))
 	} else {
 		Render(c, 200, pages.ChallengeDetail(challenge, completed[challenge.ID]))
 	}
@@ -162,10 +162,21 @@ func ChallengeIndexHandler(c *gin.Context) {
 		c.String(500, "Database error")
 		return
 	}
+	query := strings.TrimSpace(c.Query("q"))
+	hideCompleted := c.Query("hide_completed") == "1"
+	if hideCompleted || query != "" {
+		visible := make([]models.Challenge, 0, len(challenges))
+		for _, challenge := range challenges {
+			if (!hideCompleted || !completed[challenge.ID]) && (query == "" || strings.Contains(strings.ToLower(challenge.Title), strings.ToLower(query)) || strings.Contains(strings.ToLower(challenge.Description), strings.ToLower(query))) {
+				visible = append(visible, challenge)
+			}
+		}
+		challenges = visible
+	}
 	if c.GetHeader("HX-Request") == "true" {
-		Render(c, 200, pages.Challenges(challenges, completed))
+		RenderPageFragment(c, "Challenges", pages.Challenges(challenges, completed, hideCompleted, query))
 	} else {
-		Render(c, 200, pages.ChallengesPage(challenges, completed))
+		Render(c, 200, pages.ChallengesPage(challenges, completed, hideCompleted, query))
 	}
 }
 
@@ -191,6 +202,7 @@ func CreateChallengeHandler(c *gin.Context) {
 		Description: description,
 		Points:      points,
 		Flag:        flag,
+		Hints:       strings.TrimSpace(c.PostForm("challenge_hints")),
 	}
 
 	if err := shared.DB.Create(&challenge).Error; err != nil {
@@ -257,4 +269,10 @@ func completedChallenges(c *gin.Context) (map[uint]bool, error) {
 		completed[id] = true
 	}
 	return completed, nil
+}
+
+// Include the page title when navigation only replaces the main content.
+func RenderPageFragment(c *gin.Context, title string, cmp templ.Component) {
+	Render(c, 200, components.PageTitle(title))
+	_ = cmp.Render(c.Request.Context(), c.Writer)
 }

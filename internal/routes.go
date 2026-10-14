@@ -14,6 +14,7 @@ func RegisterRoutes(router *gin.Engine) {
 	}
 	staticGroup.Static("/", "./ui/static")
 	router.StaticFile("/favicon.png", "./public/favicon.png")
+	router.StaticFile("/favicon.svg", "./public/favicon.svg")
 	router.Use(UserLoader())
 	router.GET("/", func(c *gin.Context) { Render(c, 200, pages.Index()) })
 	router.GET("/login", handlers.LoginPageHandler)
@@ -38,7 +39,10 @@ func RegisterRoutes(router *gin.Engine) {
 	challengeAdmin := router.Group("/admin")
 	challengeAdmin.Use(AdminAuth())
 	challengeAdmin.GET("/challenges", handlers.AdminChallengesHandler)
+	challengeAdmin.GET("/challenges/new", handlers.AdminAddChallengeHandler)
 	challengeAdmin.POST("/challenges/:id", handlers.UpdateChallengeHandler)
+	challengeAdmin.POST("/accounts/:id/delete", handlers.DeleteAccountHandler)
+	challengeAdmin.POST("/accounts/:id/candy", handlers.GiveCandyHandler)
 	router.GET("/scoreboard", handlers.ScoreboardHandler)
 }
 

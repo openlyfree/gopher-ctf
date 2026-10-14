@@ -4,32 +4,53 @@ import (
 	"github.com/openlyfree/gopher-ctf/internal/models"
 	"github.com/openlyfree/gopher-ctf/ui/components"
 	"strconv"
+ "net/url"
 )
 
-templ Challenges(challenges []models.Challenge, completed map[uint]bool) {
+templ Challenges(challenges []models.Challenge, completed map[uint]bool, hideCompleted bool, query string) {
 	<div class="challenges-container">
-		<div class="challenges-grid">
+        <div class="challenge-toolbar">
+        <form class="challenge-search" method="get" action="/challenges" hx-get="/challenges" hx-trigger="submit, input delay:200ms" hx-sync="this:replace" hx-target="#challenge-results" hx-select="#challenge-results" hx-swap="outerHTML" hx-replace-url="true">
+            <label class="panel__field"><span>find a challenge</span><input id="challenge-search-input" type="search" name="q" value={ query } placeholder="name or description"/></label>
+            if hideCompleted {
+                <input type="hidden" name="hide_completed" value="1"/>
+            }
+            <button type="submit">find</button>
+        </form>
+        if hideCompleted {
+            <a class="challenge-filter" href={ "/challenges?q="+url.QueryEscape(query) } hx-get="/challenges" hx-include="#challenge-search-input" hx-target="main" hx-replace-url="true">show completed</a>
+        } else {
+            <a class="challenge-filter" href={ "/challenges?hide_completed=1&q="+url.QueryEscape(query) } hx-get="/challenges?hide_completed=1" hx-include="#challenge-search-input" hx-target="main" hx-replace-url="true">hide completed</a>
+        }
+        </div>
+		<div id="challenge-results" class="challenges-grid">
 			for _, c := range challenges {
-				<div class="challenge-card">
+				<a class="challenge-card" data-completed={ strconv.FormatBool(completed[c.ID]) } href={ "/challenges/" + strconv.Itoa(int(c.ID)) } hx-get={ "/challenges/" + strconv.Itoa(int(c.ID)) } hx-replace-url="true" hx-target="main">
 					<div class="challenge-card-header">
-						<h2>{ c.Title }</h2>
+						<h2 title={ c.Title }>{ c.Title }</h2>
 						<span class="challenge-points">{ strconv.Itoa(int(c.Points)) } pts</span>
 					</div>
 					if completed[c.ID] {
                         <p class="challenge-completed">completed! 🔥</p>
                     }
-                    <button class="challenge-btn" hx-get={ "/challenges/" + strconv.Itoa(int(c.ID)) } hx-replace-url="true" hx-target="main">View Challenge</button>
-				</div>
+                    <span class="challenge-btn">View Challenge</span>
+				</a>
 			}
 			if len(challenges) == 0 {
-				<p class="no-challenges">No challenges available yet. Check back soon!</p>
+				if query != "" {
+                    <p class="no-challenges">no matches. try another search or show completed.</p>
+                } else if hideCompleted {
+                    <p class="no-challenges">no unfinished challenges. nice :D</p>
+                } else {
+                    <p class="no-challenges">No challenges available yet. Check back soon!</p>
+                }
 			}
 		</div>
 	</div>
 }
 
-templ ChallengesPage(challenges []models.Challenge, completed map[uint]bool) {
+templ ChallengesPage(challenges []models.Challenge, completed map[uint]bool, hideCompleted bool, query string) {
 	@components.Layout("Challenges") {
-		@Challenges(challenges, completed)
+		@Challenges(challenges, completed, hideCompleted, query)
 	}
 }

@@ -4,56 +4,24 @@ import (
  "github.com/openlyfree/gopher-ctf/ui/components"
  "github.com/openlyfree/gopher-ctf/internal/models"
  "strconv"
+ "github.com/openlyfree/gopher-ctf/internal/shared"
 )
 
-templ Admin(users []models.User) {
+templ Admin(users []models.User, deleteTokens map[uint]string, candyTokens map[uint]string) {
 	@components.Layout("Admin Dashboard") {
 		<div class="admin">
 			<div class="admin__header">
 				<h2>uhh if ur not supposed to be here please leave, thank you :D</h2> <!-- final and strongest defense -->
-                <a href="/admin/challenges" hx-boost="false">view &amp; edit challenges</a>
+                <a class="admin-nav-button" href="/admin/challenges/new" hx-boost="false">add challenge</a>
+                <a class="admin-nav-button" href="/admin/challenges" hx-boost="false">view &amp; edit challenges</a>
 			</div>
 			<section class="admin__card">
                 <h3>candy check</h3>
-                <p>ask for their name + points code. match them here, then check their points :D</p>
-                @AdminPlayers(users)
+                <p>ask for their name + points code. match them here, then check their points :D { strconv.Itoa(shared.CandyRate()) } points = 1 candy.</p>
+                @AdminPlayers(users, deleteTokens, candyTokens)
             </section>
             <div class="admin__grid">
-				<section class="admin__card">
-					<div class="admin__card-header">
-						<h3>Add challenge</h3>
-					</div>
-					<form
-						class="admin__form"
-						hx-post="/secret-candy-vault/challenge"
-						hx-target="#upload-result"
-						enctype="multipart/form-data"
-					>
-						<label class="admin__field">
-							<span>files</span>
-							<input type="file" name="challenge_files" accept=".tar, .tar.gz, application/x-tar, application/gzip" placeholder=" i like tar files"/>
-						</label>
-						<label class="admin__field">
-							<span>name</span>
-							<input type="text" name="challenge_name" placeholder="challenge name" required/>
-						</label>
-						<p class="admin__hint">no funky symbols in the name btw.</p>
-						<label class="admin__field">
-							<span>description</span>
-							<input type="text" name="challenge_description" placeholder="description" required/>
-						</label>
-						<label class="admin__field">
-							<span>points</span>
-							<input type="number" name="challenge_points" min="0" placeholder="challenge points" required/>
-						</label>
-						<label class="admin__field">
-							<span>flag(include header)</span>
-							<input type="text" name="challenge_flag" placeholder="flag{this_is_a_flag}" required/>
-						</label>
-						<button type="submit">Upload challenge</button>
-					</form>
-					<div id="upload-result" class="admin__result"></div>
-				</section>
+
 				<section class="admin__card admin__card--compact">
 					<div class="admin__card-header">
 						<h2>Reload config</h2>
@@ -70,10 +38,13 @@ templ Admin(users []models.User) {
 }
 
 
-templ AdminPlayers(users []models.User) {
+templ AdminPlayers(users []models.User, deleteTokens map[uint]string, candyTokens map[uint]string, message ...string) {
  <div id="admin-players" class="scoreboard-table-wrapper" hx-get="/secret-candy-vault/players" hx-trigger="every 10s" hx-swap="outerHTML">
+  if len(message)>0 && message[0]!="" {
+   <p class="admin__result" role="alert">{ message[0] }</p>
+  }
   <table class="scoreboard-table">
-   <thead><tr><th>username</th><th>points</th><th>points code</th></tr></thead>
+   <thead><tr><th>username</th><th>points</th><th>points code</th><th>candy owed</th><th>candy</th><th>account</th></tr></thead>
    <tbody>
     for _, user := range users {
      <tr><td>{ user.Username }</td><td>{ strconv.Itoa(user.Score) }</td><td>
@@ -82,6 +53,22 @@ templ AdminPlayers(users []models.User) {
       } else {
        <span>old account ? no code</span>
       }
+     </td><td>{ strconv.Itoa(user.CandyOwed(shared.CandyRate())) }</td><td>
+      if user.CandyOwed(shared.CandyRate())>0 {
+       <form method="post" action={ "/admin/accounts/"+strconv.FormatUint(uint64(user.ID),10)+"/candy" } hx-post={ "/admin/accounts/"+strconv.FormatUint(uint64(user.ID),10)+"/candy" } hx-target="#admin-players" hx-swap="outerHTML" hx-disabled-elt="find button" hx-sync="this:drop">
+        <input type="hidden" name="candies_given" value={ strconv.Itoa(user.CandiesGiven) }/>
+        <input type="hidden" name="candy_token" value={ candyTokens[user.ID] }/>
+        <button type="submit">give candy</button>
+       </form>
+      } else {
+       <button type="button" disabled>give candy</button>
+      }
+     </td><td>
+      <form method="post" action={ "/admin/accounts/"+strconv.FormatUint(uint64(user.ID),10)+"/delete" } hx-boost="false" data-username={ user.Username } onsubmit="return confirm('delete ' + this.dataset.username + '? their points will be removed and they will be signed out.');">
+       <input type="hidden" name="username" value={ user.Username }/>
+       <input type="hidden" name="delete_token" value={ deleteTokens[user.ID] }/>
+       <button type="submit">delete account</button>
+      </form>
      </td></tr>
     }
    </tbody>

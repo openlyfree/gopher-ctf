@@ -102,7 +102,7 @@ func TestPostgresScoring(t *testing.T) {
 	shared.DB = db
 	defer func() { shared.DB = oldDB }()
 	user := models.User{Username: "player", Password: "unused"}
-	challenge := models.Challenge{Title: "Test", Flag: "flag{x}", Points: 100}
+	challenge := models.Challenge{Title: "Test", Description: "A cipher puzzle", Flag: "flag{x}", Points: 100}
 	if err = db.Create(&user).Error; err != nil {
 		t.Fatal(err)
 	}
@@ -173,6 +173,39 @@ func TestPostgresScoring(t *testing.T) {
 				if w.Header().Get("Cache-Control") != "private, no-store" {
 					t.Fatal("completion pages must not be shared in caches")
 				}
+			}
+		}
+	}
+	for _, hx := range []bool{false, true} {
+		for _, tc := range []struct {
+			id        uint
+			completed bool
+		}{{user.ID, true}, {other.ID, false}, {0, false}} {
+			w := loadUI(tc.id, "/challenges?hide_completed=1", hx)
+			if w.Code != 200 || strings.Contains(w.Body.String(), `class="challenge-card"`) == tc.completed {
+				t.Fatal("hide completed must filter only the current player's solved challenges")
+			}
+			if !strings.Contains(w.Body.String(), "show completed") {
+				t.Fatal("missing way to restore completed challenges")
+			}
+			if tc.completed && !strings.Contains(w.Body.String(), "no unfinished challenges") {
+				t.Fatal("missing filtered empty state")
+			}
+		}
+	}
+	for _, hx := range []bool{false, true} {
+		for _, tc := range []struct {
+			query   string
+			userID  uint
+			visible bool
+		}{
+			{"q=TEST", user.ID, true}, {"q=CIPHER", user.ID, true}, {"q=flag%7Bx%7D", user.ID, false},
+			{"q=Test&hide_completed=1", user.ID, false}, {"q=Test&hide_completed=1", other.ID, true},
+			{"q=missing", 0, false},
+		} {
+			w := loadUI(tc.userID, "/challenges?"+tc.query, hx)
+			if w.Code != 200 || strings.Contains(w.Body.String(), `class="challenge-card"`) != tc.visible {
+				t.Fatalf("wrong search results for %s", tc.query)
 			}
 		}
 	}

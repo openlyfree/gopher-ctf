@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -21,14 +22,42 @@ func renderAdminChallenges(c *gin.Context, status int, message string, edit *mod
 		c.String(500, "couldn't load the challenges. try again")
 		return
 	}
-	if edit != nil {
+	selected := edit
+	if selected == nil && c.Query("id") != "" {
+		id, err := strconv.ParseUint(c.Query("id"), 10, 32)
+		if err != nil || id == 0 {
+			c.String(400, "invalid challenge id")
+			return
+		}
 		for i := range challenges {
-			if challenges[i].ID == edit.ID {
-				challenges[i] = *edit
+			if uint64(challenges[i].ID) == id {
+				selected = &challenges[i]
+				break
+			}
+		}
+		if selected == nil {
+			c.String(404, "challenge not found")
+			return
+		}
+	}
+	if selected == nil && len(challenges) > 0 {
+		selected = &challenges[0]
+	}
+	query := strings.TrimSpace(c.Query("q"))
+	visible := challenges
+	if query != "" {
+		visible = make([]models.Challenge, 0, len(challenges))
+		for _, challenge := range challenges {
+			if strings.Contains(strings.ToLower(challenge.Title), strings.ToLower(query)) {
+				visible = append(visible, challenge)
 			}
 		}
 	}
-	Render(c, status, pages.AdminChallenges(challenges, message))
+	if c.GetHeader("HX-Request") == "true" && c.Request.Method == "GET" {
+		Render(c, status, pages.AdminChallengeWorkspace(visible, selected, message, query))
+	} else {
+		Render(c, status, pages.AdminChallenges(visible, selected, message, query))
+	}
 }
 
 func AdminChallengesHandler(c *gin.Context) {
@@ -59,6 +88,7 @@ func UpdateChallengeHandler(c *gin.Context) {
 	challenge.Title = strings.TrimSpace(c.PostForm("challenge_name"))
 	challenge.Description = strings.TrimSpace(c.PostForm("challenge_description"))
 	challenge.Flag = strings.TrimSpace(c.PostForm("challenge_flag"))
+	challenge.Hints = strings.TrimSpace(c.PostForm("challenge_hints"))
 	points, err := strconv.Atoi(strings.TrimSpace(c.PostForm("challenge_points")))
 	if err != nil || points < 0 {
 		renderAdminChallenges(c, 400, "points need to be a whole number, zero or more", &challenge)
@@ -70,7 +100,7 @@ func UpdateChallengeHandler(c *gin.Context) {
 		return
 	}
 	result := shared.DB.Model(&models.Challenge{}).Where("id = ?", id).Updates(map[string]interface{}{
-		"title": challenge.Title, "description": challenge.Description, "points": challenge.Points, "flag": challenge.Flag,
+		"title": challenge.Title, "description": challenge.Description, "points": challenge.Points, "flag": challenge.Flag, "hints": challenge.Hints,
 	})
 	if result.Error != nil {
 		_ = c.Error(result.Error)
@@ -81,5 +111,9 @@ func UpdateChallengeHandler(c *gin.Context) {
 		c.String(404, "challenge not found")
 		return
 	}
-	c.Redirect(http.StatusSeeOther, "/admin/challenges?saved=1")
+	destination := "/admin/challenges?saved=1&id=" + strconv.FormatUint(id, 10)
+	if query := strings.TrimSpace(c.Query("q")); query != "" {
+		destination += "&q=" + url.QueryEscape(query)
+	}
+	c.Redirect(http.StatusSeeOther, destination)
 }
